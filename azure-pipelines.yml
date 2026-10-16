@@ -18,7 +18,7 @@ steps:
     provider: 'azurerm'
     command: 'init'
     backendAzureRmUseEntraIdForAuthentication: false
-    backendServiceArm: 'ReDeployPip1'
+    backendServiceArm: 'ARM_Connectivity'
     backendAzureRmOverrideSubscriptionID: '$(SubID)'
     backendAzureRmResourceGroupName: '$(SARG)'
     backendAzureRmStorageAccountName: '$(SAName)'
@@ -30,7 +30,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
-    environmentServiceNameAzureRM: 'ReDeployPip1'
+    environmentServiceNameAzureRM: 'ARM_Connectivity'
     environmentAzureRmOverrideSubscriptionID: '$(SubID)'
 
 - task: TerraformTask@5
@@ -38,5 +38,5 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'apply'
-    environmentServiceNameAzureRM: 'ReDeployPip1'
+    environmentServiceNameAzureRM: 'ARM_Connectivity'
     environmentAzureRmOverrideSubscriptionID: '$(SubID)'
