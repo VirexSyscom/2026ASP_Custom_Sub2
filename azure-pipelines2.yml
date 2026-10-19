@@ -10,8 +10,28 @@ pool:
   name: DevOps_Connectivity_Agent_Pool
 
 
-
 steps:
+- task: TerraformTask@5
+  displayName: terraform init
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendAzureRmUseEntraIdForAuthentication: false
+    backendServiceArm: 'ARM_Connectivity'
+    backendAzureRmOverrideSubscriptionID: '$(SubID)'
+    backendAzureRmResourceGroupName: '$(SARG)'
+    backendAzureRmStorageAccountName: '$(SAName)'
+    backendAzureRmContainerName: '$(CName)'
+    backendAzureRmKey: '$(SAKey)'
+
+- task: TerraformTask@5
+  displayName: terraform plan
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'ARM_Connectivity'
+    environmentAzureRmOverrideSubscriptionID: '$(SubID)'
+
 - task: TerraformTask@5
   displayName: terraform init
   inputs:
