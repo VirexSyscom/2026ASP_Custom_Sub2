@@ -1,1 +1,32 @@
-test
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  name: DevOps_Connectivity_Agent_Pool
+
+
+
+steps:
+- task: TerraformTask@5
+  displayName: terraform init
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendAzureRmUseEntraIdForAuthentication: false
+    backendServiceArm: 'ARM_Connectivity'
+    backendAzureRmOverrideSubscriptionID: '$(SubID)'
+    backendAzureRmResourceGroupName: '$(SARG)'
+    backendAzureRmStorageAccountName: '$(SAName)'
+    backendAzureRmContainerName: '$(CName)'
+    backendAzureRmKey: '$(SAKey)'
+
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'destroy'
+    environmentServiceNameAzureRM: 'ARM_Connectivity'
