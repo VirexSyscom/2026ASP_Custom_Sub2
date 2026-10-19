@@ -29,6 +29,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
+    commandOptions: '-destroy -out=destroy.tfplan'
     environmentServiceNameAzureRM: 'ARM_Connectivity'
     environmentAzureRmOverrideSubscriptionID: '$(SubID)'
 
@@ -37,5 +38,6 @@ steps:
   displayName: terraform destory
   inputs:
     provider: 'azurerm'
-    command: 'destroy'
+    command: 'destroy'    
+    commandOptions: '-auto-approve'
     environmentServiceNameAzureRM: 'ARM_Connectivity'
