@@ -1,11 +1,12 @@
 ############################################
 # outputs.tf
-#   統一格式：共用驗證 → 資源群組 → Hub 網路
+#   統一格式：共用驗證 → 資源群組 → Hub 網路 → 監控
 ############################################
 
 ############################################
 # 共用：命名與標籤驗證
 ############################################
+
 output "name_prefix_applied" {
   description = "實際套用的前綴字串"
   value       = local.prefix
@@ -29,6 +30,7 @@ output "hub_tags_applied" {
 ############################################
 # 資源群組
 ############################################
+
 output "resource_groups" {
   description = "本組態管理的資源群組"
   value = {
@@ -39,6 +41,7 @@ output "resource_groups" {
 ############################################
 # Hub 網路層
 ############################################
+
 output "hub_vnet" {
   description = "Hub VNet 資訊"
   value = {
@@ -47,20 +50,17 @@ output "hub_vnet" {
   }
 }
 
-output "hub_subnet_ids" {
-  description = "Hub 子網路資源 ID"
-  value = {
-    hub_bastion = var.create_hub_bastion ? azurerm_subnet.hub_bastion[0].id : null
-    gateway     = var.create_vpn_gateway ? azurerm_subnet.gateway[0].id : null
-  }
+output "gateway_subnet_id" {
+  description = "GatewaySubnet 資源 ID"
+  value       = var.create_vpn_gateway ? azurerm_subnet.gateway[0].id : null
 }
 
-output "hub_bastion" {
-  description = "Hub Bastion 資訊"
+output "hub_bastion_public_ip" {
+  description = "Hub Bastion 公用 IP 資訊（hub-vnet-bastion-IPaddress）"
   value = {
-    id        = try(azurerm_bastion_host.hub[0].id, null)
-    sku       = try(azurerm_bastion_host.hub[0].sku, null)
-    public_ip = try(azurerm_public_ip.hub_bastion[0].ip_address, null)
+    id         = try(azurerm_public_ip.hub_bastion[0].id, null)
+    name       = try(azurerm_public_ip.hub_bastion[0].name, null)
+    ip_address = try(azurerm_public_ip.hub_bastion[0].ip_address, null)
   }
 }
 
@@ -76,7 +76,7 @@ output "vpn_gateway" {
 }
 
 output "vpn_connection" {
-  description = "Site-to-Site VPN Connection 資訊"
+  description = "Site-to-Site VPN Connection 資訊（ToFortiVPN）"
   value = {
     created = var.create_vpn_gateway && var.create_vpn_connection
     id      = try(azurerm_virtual_network_gateway_connection.fortigate[0].id, null)
@@ -84,23 +84,24 @@ output "vpn_connection" {
   }
 }
 
-output "hub_spoke_peering" {
-  description = "Hub 與 Spoke 之間的 VNet Peering 狀態"
+############################################
+# 監控
+############################################
+
+output "log_analytics_workspace" {
+  description = "Entra-Risky-SignIn 使用的 Log Analytics 工作區"
   value = {
-    enabled         = var.enable_hub_spoke_peering
-    gateway_transit = local.peering_gateway_transit
-    hub_to_spoke_id = try(azurerm_virtual_network_peering.hub_to_spoke[0].id, null)
-    spoke_to_hub_id = try(azurerm_virtual_network_peering.spoke_to_hub[0].id, null)
-    hub_to_uat_id   = try(azurerm_virtual_network_peering.hub_to_uat[0].id, null)
-    uat_to_hub_id   = try(azurerm_virtual_network_peering.uat_to_hub[0].id, null)
+    created = var.create_risky_signin_alert && var.create_log_analytics_workspace
+    id      = var.create_risky_signin_alert ? local.alert_workspace_id : null
+    name    = try(azurerm_log_analytics_workspace.hub[0].name, null)
   }
 }
 
-output "hub_private_dns_zone_links" {
-  description = "Hub VNet 的 Private DNS Zone 連結 ID"
+output "entra_risky_signin_alert" {
+  description = "Entra-Risky-SignIn 記錄搜尋警示規則"
   value = {
-    blob      = try(azurerm_private_dns_zone_virtual_network_link.blob_hub[0].id, null)
-    sql       = try(azurerm_private_dns_zone_virtual_network_link.sql_hub[0].id, null)
-    key_vault = try(azurerm_private_dns_zone_virtual_network_link.keyvault_hub[0].id, null)
+    created = var.create_risky_signin_alert
+    id      = try(azurerm_monitor_scheduled_query_rules_alert_v2.risky_signin[0].id, null)
+    name    = try(azurerm_monitor_scheduled_query_rules_alert_v2.risky_signin[0].name, null)
   }
 }

@@ -1,5 +1,6 @@
 ############################################
 # terraform.tfvars
+#   Hub-Network-RG 獨立版本
 ############################################
 
 ############################################
@@ -9,7 +10,8 @@
 # subscription_id = "00000000-0000-0000-0000-000000000000"
 
 ############################################
-# 命名前綴（需與 Spoke 網路組態一致）
+# 命名前綴
+#   設為 "" 時，資源名稱與入口網站現況完全相同
 ############################################
 name_prefix    = "demo"
 name_separator = "-"
@@ -17,17 +19,13 @@ name_separator = "-"
 ############################################
 # 基本設定
 ############################################
-location       = "japaneast"
-location_short = "jpe"
+location = "japaneast"
 
 ############################################
 # 資源群組（名稱不套用前綴）
 ############################################
 hub_resource_group_name   = "Hub-Network-RG"
 create_hub_resource_group = true
-
-# 既有 Spoke 網路 RG（Spoke VNet / Private DNS Zone 所在，僅供參照）
-network_resource_group_name = "Spoke-Network-RG"
 
 ############################################
 # 標籤
@@ -45,7 +43,7 @@ tags = {
   ReviewDate   = "2027-01-01"
 }
 
-# 分層專屬標籤
+# Hub 專屬標籤
 hub_tags = {
   Workload = "Hub-Network"
 }
@@ -53,15 +51,13 @@ hub_tags = {
 ############################################
 # 網路位址 - Hub
 ############################################
-hub_vnet_address_space      = ["10.0.0.0/16"]
-hub_bastion_subnet_prefixes = ["10.0.0.0/26"]
-gateway_subnet_prefixes     = ["10.0.1.0/27"]
+hub_vnet_address_space  = ["10.0.0.0/16"]
+gateway_subnet_prefixes = ["10.0.1.0/27"]
 
 ############################################
-# Bastion
+# Bastion 公用 IP（hub-vnet-bastion-IPaddress）
 ############################################
-hub_bastion_sku    = "Basic"
-create_hub_bastion = true
+create_hub_bastion_public_ip = true
 
 ############################################
 # VPN Gateway / Site-to-Site
@@ -83,6 +79,18 @@ create_vpn_connection = false
 # vpn_shared_key      = "***"
 
 ############################################
-# Hub 與 Spoke 對等互連
+# 監控：Entra-Risky-SignIn
+#   create_log_analytics_workspace = true  → 於 Hub RG 內建立專屬工作區（完全獨立）
+#   create_log_analytics_workspace = false → 需填 log_analytics_workspace_id
+#   alert_action_group_id 留空 → 警示不綁定任何 Action Group
 ############################################
-enable_hub_spoke_peering = true
+create_risky_signin_alert      = true
+create_log_analytics_workspace = true
+log_analytics_workspace_id     = ""
+log_analytics_retention_days   = 30
+
+alert_action_group_id = ""
+
+risky_signin_alert_severity  = 1
+risky_signin_alert_frequency = "PT5M"
+risky_signin_alert_window    = "PT5M"
