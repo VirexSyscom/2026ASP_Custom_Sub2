@@ -32,20 +32,9 @@ steps:
     environmentServiceNameAzureRM: 'ARM_Connectivity'
     environmentAzureRmOverrideSubscriptionID: '$(SubID)'
 
-- task: TerraformTask@5
-  displayName: terraform init
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    backendAzureRmUseEntraIdForAuthentication: false
-    backendServiceArm: 'ARM_Connectivity'
-    backendAzureRmOverrideSubscriptionID: '$(SubID)'
-    backendAzureRmResourceGroupName: '$(SARG)'
-    backendAzureRmStorageAccountName: '$(SAName)'
-    backendAzureRmContainerName: '$(CName)'
-    backendAzureRmKey: '$(SAKey)'
 
 - task: TerraformTask@5
+  displayName: terraform destory
   inputs:
     provider: 'azurerm'
     command: 'destroy'
