@@ -24,7 +24,7 @@ steps:
     backendAzureRmStorageAccountName: '$(SAName)'
     backendAzureRmContainerName: '$(CName)'
 #    backendAzureRmKey: '$(SAKey)' 
-    backendAzureRmKey: connectivity.tfstate
+    backendAzureRmKey: 'connectivity.tfstate'
 
 - task: TerraformTask@5
   displayName: terraform plan
